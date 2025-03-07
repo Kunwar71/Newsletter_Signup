@@ -67,7 +67,7 @@ app.post("/", function (req, res) {
   const url = "https://us16.api.mailchimp.com/3.0/lists/1eb70b975c";
   const options = {
     method: "POST",
-    auth: "suraj:14c34cf1fcb0786d1dfbc7fb216640abc-us16",
+    auth: "suraj:4c34cf1fcb0786d1dfbc7fb216640abc-us16",
   };
   const request = https.request(url, options, function (response) {
     if (response.statusCode === 200) {
