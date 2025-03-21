@@ -49,7 +49,7 @@ app.post("/", async function (req, res) {
 
     console.log("Mailchimp API Response:", response);
 
-    if (response.id) {
+    if (response.new_members && response.new_members.length > 0) {
       console.log("Success: Member added successfully!");
       res.sendFile(__dirname + "/success.html");
     } else {
