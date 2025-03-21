@@ -19,12 +19,6 @@ client.setConfig({
   server: MAILCHIMP_SERVER_PREFIX,
 });
 
-// // Debugging: Log environment variables
-// console.log("MAILCHIMP_LIST_ID:", MAILCHIMP_LIST_ID);
-// console.log("MAILCHIMP_API_KEY:", MAILCHIMP_API_KEY);
-// console.log("MAILCHIMP_SERVER_PREFIX:", MAILCHIMP_SERVER_PREFIX);
-// console.log("Environment Variables:", process.env);
-
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/signup.html");
 });
@@ -34,7 +28,8 @@ app.post("/", async function (req, res) {
 
   // Validate required fields
   if (!fName || !lName || !email) {
-    res.sendFile(__dirname + "/failure.html");
+    console.log("Missing fields");
+    return res.sendFile(__dirname + "/failure.html"); // Prevent further execution
   }
 
   try {
@@ -47,23 +42,25 @@ app.post("/", async function (req, res) {
       },
     });
 
+    // Log the full response to understand the structure
     console.log("Mailchimp API Response:", response);
 
-    if (response.new_members && response.new_members.length > 0) {
+    // Check if response has the necessary success criteria
+    if (response.status === "subscribed") {
       console.log("Success: Member added successfully!");
-      res.sendFile(__dirname + "/success.html");
+      return res.sendFile(__dirname + "/success.html");
     } else {
-      console.log("Failure: Member not added.");
-      res.sendFile(__dirname + "/failure.html");
+      console.log("Failure: Member not added, status: " + response.status);
+      return res.sendFile(__dirname + "/failure.html");
     }
   } catch (error) {
     console.error("Mailchimp Error:", error.response?.body || error.message);
-    res.sendFile(__dirname + "/failure.html");
+    return res.sendFile(__dirname + "/failure.html"); // Handle API error
   }
 });
 
 app.post("/failure", function (req, res) {
-  res.redirect("/");
+  res.redirect("/"); // Ensure proper redirection after failure
 });
 
 app.listen(port, function () {
